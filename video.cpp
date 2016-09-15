@@ -1,6 +1,7 @@
 #include "video.h"
 
-Video::Video()
-{
 
-}
+    Video::Video(int bufferSize){
+        b=new buffer(bufferSize);
+    }
+

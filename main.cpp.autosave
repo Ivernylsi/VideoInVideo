@@ -11,22 +11,6 @@ int nokFPS;// this  var is needed to show videos in their real FPS
 cv::Mat frame1;
 cv::Mat frame2;
 
-//class Video {
-//public:
-//    int fps;//fps to show with natural speeed
-//    int fpsCounter;//Maximum count of frame to find point of stopping showing videos
-//    int fpsStep;
-//    bool videoEnded = false;
-//    cv::Size size;
-//    cv::VideoCapture cap;
-//    buffer *b;
-//    Video(int bufferSize){
-//        b=new buffer(bufferSize);
-//    }
-//};
-
-
-
 cv::Size videoResizer(double rows1,double cols1,double rows2,double cols2){ // Find optimal size of second image
    if(rows1 >= cols1 and rows2 >= cols2 ){
        cols2 *= cols1 / (1.5 *rows2) ;

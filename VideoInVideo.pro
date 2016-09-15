@@ -9,7 +9,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    buffer.cpp
+    buffer.cpp \
+    video.cpp
 
 LIBS += -L/usr/local/lib \
 -lopencv_core \
@@ -25,5 +26,6 @@ LIBS += -L/usr/local/lib \
 -lopencv_imgcodecs
 
 HEADERS += \
-    buffer.h
+    buffer.h \
+    video.h
 

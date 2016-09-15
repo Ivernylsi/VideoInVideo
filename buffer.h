@@ -15,10 +15,6 @@ public:
  std::mutex a;
  boost::interprocess::interprocess_semaphore *Free;
  boost::interprocess::interprocess_semaphore *Used;
- int fps;//fps to show with natural speeed
- int rows;
- int cols;
- int fpsCounter;//Maximum count of frame to find point of stopping showing videos
 
  buffer(int );
 
