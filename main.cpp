@@ -11,22 +11,6 @@ int nokFPS;// this  var is needed to show videos in their real FPS
 cv::Mat frame1;
 cv::Mat frame2;
 
-//class Video {
-//public:
-//    int fps;//fps to show with natural speeed
-//    int fpsCounter;//Maximum count of frame to find point of stopping showing videos
-//    int fpsStep;
-//    bool videoEnded = false;
-//    cv::Size size;
-//    cv::VideoCapture cap;
-//    buffer *b;
-//    Video(int bufferSize){
-//        b=new buffer(bufferSize);
-//    }
-//};
-
-
-
 cv::Size videoResizer(double rows1,double cols1,double rows2,double cols2){ // Find optimal size of second image
    if(rows1 >= cols1 and rows2 >= cols2 ){
        cols2 *= cols1 / (1.5 *rows2) ;
@@ -93,21 +77,16 @@ int nok(int a, int b)
 }
 
 void getParam(Video &video1,Video &video2){//get essential params to make system work
-    video1.b->a.lock();
-    video2.b->a.lock();
     video2.size = videoResizer(video1.size.height,video1.size.width,video2.size.height,video2.size.width);
     nokFPS = nok(video1.fps,video2.fps);
     video1.fpsStep = nokFPS / video1.fps;
     video2.fpsStep = nokFPS / video2.fps;
-    video2.b->a.unlock();
-    video1.b->a.unlock();
 }
 
 void videoReader(Video &video,std::string filename){
     video.cap.open(filename);
     video.fps=(int)video.cap.get(cv::CAP_PROP_FPS);
     video.fpsCounter=(int)video.cap.get(cv::CAP_PROP_FRAME_COUNT);
-
     if(video.fps % 2 != 0) video.fps ++;// to avoid BIG NOK
     cv::Mat frame;
     video.cap>>frame;
@@ -135,17 +114,22 @@ void imageDisplay(Video &video1,Video &video2){
 int main()
 {
     std::string file1 = "DSCN1369.MOV";
-    std::string file3 = "DSCN1372.MOV";
-    std::string file4 = "DSCN1378.MOV";
-    std::string file6 = "Easy grass tricking combo.mp4";
-    std::string file7 = "video6.mp4";
-    std::string file8 = "IMG_5740.MOV";
+    std::string file2 = "DSCN1372.MOV";
+    std::string file3 = "DSCN1378.MOV";
+    std::string file4 = "Easy grass tricking combo.mp4";
+    std::string file5 = "video6.mp4";
+    std::string file6 = "IMG_5740.MOV";
+    std::string file7 = "MVI_6052.mov";
+    std::string file8 = "MVI_6089.mov";
     Video video1(200);
     Video video2(200);
 
-   std::thread firstVideoThread(videoReader,std::ref(video1),file1);
+   std::thread firstVideoThread(videoReader,std::ref(video1),file7);
    std::thread secondVideoThread(videoReader,std::ref(video2),file8);
-    usleep(1000*2000);
+   video1.b->Used->wait();
+   video1.b->Used->post();
+   video2.b->Used->wait();
+   video2.b->Used->post();
    std::thread videoShowingThread(imageDisplay,std::ref(video1),std::ref(video2));
     firstVideoThread.join();
     secondVideoThread.join();
