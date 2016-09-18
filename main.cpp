@@ -5,8 +5,7 @@
 #include <opencv2/video/tracking.hpp>
 #include <buffer.h>
 #include <video.h>
-
-int nokFPS;// this  var is needed to show videos in their real FPS
+#include <chrono>>
 
 cv::Mat frame1;
 cv::Mat frame2;
@@ -77,10 +76,7 @@ int nok(int a, int b)
 }
 
 void getParam(Video &video1,Video &video2){//get essential params to make system work
-    video2.size = videoResizer(video1.size.height,video1.size.width,video2.size.height,video2.size.width);
-    nokFPS = nok(video1.fps,video2.fps);
-    video1.fpsStep = nokFPS / video1.fps;
-    video2.fpsStep = nokFPS / video2.fps;
+
 }
 
 void videoReader(Video &video,std::string filename){
@@ -101,12 +97,21 @@ void videoReader(Video &video,std::string filename){
 
 void imageDisplay(Video &video1,Video &video2){
     cv::Mat frame;
-    getParam(video1,video2);
+    int workingTime;
+    int nokFPS;// this  var is needed to show videos in their real FPS
+    video2.size = videoResizer(video1.size.height,video1.size.width,video2.size.height,video2.size.width);
+    nokFPS = nok(video1.fps,video2.fps);
+    video1.fpsStep = nokFPS / video1.fps;
+    video2.fpsStep = nokFPS / video2.fps;
     int i=video1.fpsStep + video2.fpsStep; // to control fps
     double delay = (double)1000 / (double)nokFPS;
     while(!video1.videoEnded || !video2.videoEnded){
+       auto t1= std::chrono::high_resolution_clock::now();
        frameChooser(video1,video2,i).copyTo(frame);
-       cv::waitKey(delay);
+       auto t2= std::chrono::high_resolution_clock::now();
+       workingTime = (int)((t1 - t2).count()/1e6);
+       if(delay - workingTime < 1 ) workingTime =0;
+       cv::waitKey(delay-workingTime);
        imshow("SuperBLackVideo",frame);
     }
 }
@@ -121,11 +126,12 @@ int main()
     std::string file6 = "IMG_5740.MOV";
     std::string file7 = "MVI_6052.mov";
     std::string file8 = "MVI_6089.mov";
+    std::string file9 = "MVI_8301.MOV";
     Video video1(200);
     Video video2(200);
 
-   std::thread firstVideoThread(videoReader,std::ref(video1),file7);
-   std::thread secondVideoThread(videoReader,std::ref(video2),file8);
+   std::thread firstVideoThread(videoReader,std::ref(video1),file8);
+   std::thread secondVideoThread(videoReader,std::ref(video2),file9);
    video1.b->Used->wait();
    video1.b->Used->post();
    video2.b->Used->wait();
